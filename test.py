@@ -1,40 +1,25 @@
-class TestProperty:
-    def __init__(self, value):
-        self._type = value
-    
-    # 不使用 @property
-    def type_without_property(self):
-        return self._type
-    
-    # 使用 @property
-    @property
-    def type_with_property(self):
-        return self._type
-    
-    # 另一个测试用例
-    @property
-    def computed_value(self):
-        """这是一个计算属性"""
-        return len(self._type) * 2
+import weakref
 
-# 测试代码
-def test_property():
-    obj = TestProperty("hello")
-    
-    print("=== 测试不使用 @property 的情况 ===")
-    print(f"直接访问: {obj.type_without_property}")  # 输出方法对象
-    print(f"方法调用: {obj.type_without_property()}")  # 输出实际值
-    
-    print("\n=== 测试使用 @property 的情况 ===")
-    print(f"直接访问: {obj.type_with_property}")  # 输出实际值
-    print(f"方法调用: {obj.type_with_property()}")  # 会报错，因为不是方法
-    
-    print("\n=== 测试计算属性 ===")
-    print(f"计算属性: {obj.computed_value}")  # 输出 10 (5*2)
-    try:
-        print(f"方法调用: {obj.computed_value()}")  # 会报错
-    except TypeError as e:
-        print(f"错误: {e}")
+class Dog:
+    def __init__(self, name):
+        self.name = name
 
-# 运行测试
-test_property()
+dog = Dog("旺财")
+dog1 = Dog("旺财1")
+
+# 1. 强引用列表
+# strong_list = [dog,dog1] 
+# 2. 弱引用列表
+weak_list = [weakref.ref(dog), weakref.ref(dog1)] 
+
+print(dog,dog1)
+print(weak_list)  # 输出: <__main__.Dog object...> (还能找到狗)
+
+# 删除外部强引用
+del dog
+
+# 此时，strong_list 依然死死抱着对象
+# print(strong_list[0].name)  # 输出: 旺财 (内存未释放)
+
+# 但是，weak_list 里的对象已经被垃圾回收了
+print(weak_list[0]().name)       # 输出: None (狗已经没了)

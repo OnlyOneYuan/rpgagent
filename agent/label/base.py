@@ -18,38 +18,38 @@ class Label(ABC):
     """"标签类"""
 
     _cache = {} # 缓存已创建的标签实例,用于快速查找标签
+    _registry = {} # 标签类的注册表
     _max_size = 128 # 缓存最大数量
 
     def __init__(self,**kwargs):
-        self._cache = kwargs
         self._name = kwargs.get('name')
-        self._level = kwargs.get('level')
+        # self._level = kwargs.get('level')
 
     def __str__(self):
-        return f'{self.name}: {self.level}'
+        return f'{self.name}'
 
     def __repr__(self):
-        return f'{self.name}: {self.level}'
+        return f'{self.name}'
 
     def __eq__(self, other:Label):
         if isinstance(other, Label):
-            return self.name == other.name and self.level == other.level
+            return self.name == other.name
         return False
     
     def __lt__(self, other:Label):
         if isinstance(other, Label):
-            return self.level < other.level
-        elif isinstance(other, int):
-            return self.level < other
+            return self.name < other.name
+        elif isinstance(other, str):
+            return self.name < other
         return NotImplemented
     
     @property
     def name(self):
         return self._name
 
-    @property
-    def level(self):
-        return self._level
+    # @property
+    # def level(self):
+    #     return self._level
 
     @property
     @abstractmethod
@@ -58,11 +58,11 @@ class Label(ABC):
         pass
 
     @classmethod
-    def labels(self)-> Dict[str, Any]:
+    def labels(cls)-> Dict[str, Any]:
         """加载标签"""
         with open(Path.LABELS.value, 'r', encoding='utf-8') as f:
             labels = json.load(f)
-            return labels[self.type]
+            return labels[cls.type]
 
     @classmethod
     def register(cls, label_type: LabelType):
@@ -88,7 +88,7 @@ class LabelFactory:
             raise ValueError(f"Unsupported label type: {label_type}")
         
         # 检查缓存
-        cache_key = (label_type, kwargs.get('name'), kwargs.get('level'))
+        cache_key = (label_type, kwargs.get('name'))
         if cache_key in Label._cache:
             return Label._cache[cache_key]
         
@@ -106,9 +106,30 @@ class LabelFactory:
 @Label.register(LabelType.PERSONALITY)
 class PersonalityLabel(Label):
     """个性标签类"""
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
+    _personality = []
+    def __init__(self, *args, **kwargs):
+        """
+        初始化方法，支持两种输入方式：
+        1. 字典形式：直接传入包含"name"键的字典
+        2. 关键字参数形式：传入name关键字参数
+        """
+        # 处理字典输入
+        if len(args) == 1 and isinstance(args[0], dict):
+            data = args[0]  # 获取输入的字典数据
+            name = data.get("name")  # 从字典中获取name值
+        else:
+            # 处理关键字参数输入
+            name = kwargs.get("name")  # 从关键字参数中获取name值
+        
+        # 调用父类初始化，传入name参数
+        super().__init__(name=name)
+        
+        # 设置标签类型为PERSONALITY
         self._type = LabelType.PERSONALITY
+        
+        # 设置个性属性
+        if name not in self._personality:
+            self._personality.append(name)
 
     @property
     def type(self):
@@ -128,9 +149,11 @@ class SkillLabel(Label):
 @Label.register(LabelType.TALENT)
 class TalentLabel(Label):
     """天赋标签类"""
+    _talent = []
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self._type = LabelType.TALENT
+        self._talent.append(kwargs.get('name'))
 
     @property
     def type(self):

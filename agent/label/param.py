@@ -1,5 +1,12 @@
 from agent.label.base import Label
 from typing import Optional, Dict, Any
+from enum import Enum
+
+class ParamStats(Enum):
+    ATK = 1
+    DEF = 2
+    paramC = "c"
+    paramV = "v"
 
 
 class Param(Label):
@@ -21,7 +28,10 @@ class Param(Label):
         pass
 
     def setdiffcutlt(self, diffcult: float):
-        self.diffcult = diffcult
+        if diffcult > 0:
+            self.diffcult = diffcult
+        else:
+            raise ValueError("diffcult must be greater than 0")
         
     def __str__(self):
         return f"{self.name}[{self.level}]:{self.value}"
@@ -36,63 +46,41 @@ class Param(Label):
     def juel_addless(self, value: int):
         self.value += value
 
-from typing import Optional, Dict, Any
-from agent.label.base import Label
+class ParamSet:
 
-class ParamFactory:
-    """
-    Param工厂类，用于创建和配置Param实例
-    """
-    
-    @staticmethod
-    def create_param(name: str, value: int, level: int = 0, diffcult: float = 1.00) -> 'Param':
-        """
-        创建一个新的Param实例
+    def __init__(self, **kwargs):
+        self.params: Dict[str, Param] = {
+            'c': Param("c", kwargs.get("c", 0)),
+            'b': Param("b", kwargs.get("b", 0)),
+            'v': Param("v", kwargs.get("v", 0)),
+            'a': Param("a", kwargs.get("a", 0))
+        }
+        for par in self.params.values():
+            if par.level < 0:
+                raise ValueError("param level must be greater or equal than 0")
+
+    def add_value(self, name: str, value: int) -> None:
+        param = self.params.get(name)
+        if param:
+            param.add_value(value)
+
+    def level_up(self, name: str, diffculty: float) -> bool:
+        param = self.params.get(name)
+        if param:
+            need_juel = (10 * diffculty)^(param.level + 1)
+            if param.value >= need_juel:
+                param.level += 1
+                param.value -= need_juel
+                return True
         
-        参数:
-            name: 参数名称
-            value: 参数值
-            level: 参数等级，默认为0
-            diffcult: 参数难度系数，默认为1.00
-            
-        返回:
-            Param: 配置好的Param实例
-        """
-        param = Param(name, value, level)
-        param.setdiffcutlt(diffcult)
-        return param
-    
-    @staticmethod
-    def create_from_dict(data: Dict[str, Any]) -> 'Param':
-        """
-        从字典数据创建Param实例
-        
-        参数:
-            data: 包含Param配置的字典，应包含name, value等必要字段
-            
-        返回:
-            Param: 配置好的Param实例
-        """
-        name = data.get('name')
-        value = data.get('value')
-        level = data.get('level', 0)
-        diffcult = data.get('diffcult', 1.00)
-        
-        if name is None or value is None:
-            raise ValueError("字典中必须包含name和value字段")
-            
-        return ParamFactory.create_param(name, value, level, diffcult)
-    
-    @staticmethod
-    def create_default_param(name: str, value: int) -> 'Param':
-        """
-        创建一个使用默认配置的Param实例
-        
-        参数:
-            name: 参数名称
-            value: 参数值
-            
-        返回:
-            Param: 配置好的Param实例
-        """
-        return ParamFactory.create_param(name, value)
+        return False
+
+    def __getitem__(self, name: str) -> Optional[Param]:
+        """获取指定参数"""
+        return self.params.get(name)
+
+    def __setitem__(self, name: str, value: int) -> None:
+        """设置指定参数的值"""
+        param = self.params.get(name)
+        if param:
+            param.value = value
