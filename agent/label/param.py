@@ -5,8 +5,8 @@ from enum import Enum
 class ParamStats(Enum):
     ATK = 1
     DEF = 2
-    paramC = "c"
-    paramV = "v"
+    SPD = 3
+    MEG = 4
 
 
 class Param(Label):
@@ -50,10 +50,10 @@ class ParamSet:
 
     def __init__(self, **kwargs):
         self.params: Dict[str, Param] = {
-            'c': Param("c", kwargs.get("c", 0)),
-            'b': Param("b", kwargs.get("b", 0)),
-            'v': Param("v", kwargs.get("v", 0)),
-            'a': Param("a", kwargs.get("a", 0))
+            ParamStats.ATK: Param(ParamStats.ATK.name, kwargs.get(ParamStats.ATK.name, 0)),
+            ParamStats.DEF: Param(ParamStats.DEF.name, kwargs.get(ParamStats.DEF.name, 0)),
+            ParamStats.SPD: Param(ParamStats.SPD.name, kwargs.get(ParamStats.SPD.name, 0)),
+            ParamStats.MEG: Param(ParamStats.MEG.name, kwargs.get(ParamStats.MEG.name, 0))
         }
         for par in self.params.values():
             if par.level < 0:
