@@ -1,0 +1,9 @@
+agent_rpg/
+.vscode/
+test_talent_levelup.py
+*.txt
+*.csv
+*.xlsx
+*.xls
+*.xlsm
+*.xlsb
