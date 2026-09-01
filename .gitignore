@@ -1,4 +1,5 @@
 agent_rpg/
+.codebuddy/
 .vscode/
 test_talent_levelup.py
 *.txt
