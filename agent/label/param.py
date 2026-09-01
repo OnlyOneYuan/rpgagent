@@ -1,23 +1,45 @@
-from agent.label.base import Label
+from agent.label.base import Label, LabelType
 from typing import Optional, Dict, Any
-from enum import Enum
+from enum import Enum, StrEnum
 
-class ParamStats(Enum):
-    ATK = 1
-    DEF = 2
-    SPD = 3
-    MEG = 4
+class BaseStats(StrEnum):
+    ATK = "attack"
+    DEF = "defense"
+    SPD = "speed"
+    MEG = "magic"
+    HP  = "health"
 
+class ParamStats(StrEnum):
+    comm = "communicate"    # 沟通
+    stre = "strength"       # 力量
+    inte = "intelligence"   # 智力
+    luck = "luck"           # 幸运
+    dexp = "dexterity"      # 敏捷  
+
+class ResStats(StrEnum):
+    bleed_res = "bleed_res"
+    poison_res = "poison_res"
+    disease_res = "disease_res"
+    curse_res = "curse_res"
+    fire_res = "fire_res"
+    ice_res = "ice_res"
+    light_res = "light_res"
+    dark_res = "dark_res"
 
 class Param(Label):
     """
     Param label
     """
     def __init__(self, name: str, value: int,level: int = 0):
-        super().__init__(name, level)
+        super().__init__(name=name)
+        self.level = level
         self.value = value
-        self.diffcult = 1.00
+        self.difficult = 1.00
     
+    @property
+    def type(self):
+        return LabelType.PARAM
+
     def __eq__(self, other):
         if isinstance(other, Param):
             return self.name == other.name and self.value == other.value
@@ -37,9 +59,9 @@ class Param(Label):
         return f"{self.name}[{self.level}]:{self.value}"
     
     def _levelUp(self):
-        if self.value > self.diffcult*10^(self.level) :
+        if self.value > self.diffcult*10**(self.level) :
             self.level += 1
-            self.value = self.value - self.diffcult*10^(self.level)
+            self.value = self.value - self.diffcult*10**(self.level)
             return True
         return False
     
@@ -50,27 +72,36 @@ class ParamSet:
 
     def __init__(self, **kwargs):
         self.params: Dict[str, Param] = {
-            ParamStats.ATK: Param(ParamStats.ATK.name, kwargs.get(ParamStats.ATK.name, 0)),
-            ParamStats.DEF: Param(ParamStats.DEF.name, kwargs.get(ParamStats.DEF.name, 0)),
-            ParamStats.SPD: Param(ParamStats.SPD.name, kwargs.get(ParamStats.SPD.name, 0)),
-            ParamStats.MEG: Param(ParamStats.MEG.name, kwargs.get(ParamStats.MEG.name, 0))
+            # ParamStats.ATK: Param(ParamStats.ATK.name, kwargs.get(ParamStats.ATK.name, 1)),
+            # ParamStats.DEF: Param(ParamStats.DEF.name, kwargs.get(ParamStats.DEF.name, 1)),
+            # ParamStats.SPD: Param(ParamStats.SPD.name, kwargs.get(ParamStats.SPD.name, 1)),
+            # ParamStats.MEG: Param(ParamStats.MEG.name, kwargs.get(ParamStats.MEG.name, 1))
+            pname : Param(pname, kwargs.get(pname, 1)) for pname in ParamStats
+        }
+        self.res: Dict[str, Param] = {
+            rname : Param(rname, kwargs.get(rname, 1)) for rname in ResStats
         }
         for par in self.params.values():
             if par.level < 0:
                 raise ValueError("param level must be greater or equal than 0")
+        for par in self.res.values():
+            if par.level < 0:
+                raise ValueError("res level must be greater or equal than 0")
 
     def add_value(self, name: str, value: int) -> None:
         param = self.params.get(name)
         if param:
-            param.add_value(value)
+            param.juel_addless(value)
 
-    def level_up(self, name: str, diffculty: float) -> bool:
+    def level_up(self, name: str, difficult: Optional[float] = None) -> bool:
         param = self.params.get(name)
         if param:
-            need_juel = (10 * diffculty)^(param.level + 1)
-            if param.value >= need_juel:
+            # 未指定难度系数时，使用参数当前的难度系数（含天赋加成）
+            difficult = difficult if difficult is not None else param.difficult
+            need = (10 * difficult) ** (param.level + 1)
+            if param.value >= need:
                 param.level += 1
-                param.value -= need_juel
+                param.value -= need
                 return True
         
         return False
@@ -84,3 +115,5 @@ class ParamSet:
         param = self.params.get(name)
         if param:
             param.value = value
+        else:
+            raise ValueError(f"param {name} not found")

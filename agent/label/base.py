@@ -12,6 +12,7 @@ class LabelType(Enum):
     SKILL       = auto()
     TALENT      = auto()
     EVENT       = auto()
+    PARAM       = auto()
 
 @total_ordering
 class Label(ABC):
@@ -31,12 +32,12 @@ class Label(ABC):
     def __repr__(self):
         return f'{self.name}'
 
-    def __eq__(self, other:Label):
+    def __eq__(self, other: "Label"):
         if isinstance(other, Label):
             return self.name == other.name
         return False
     
-    def __lt__(self, other:Label):
+    def __lt__(self, other: "Label"):
         if isinstance(other, Label):
             return self.name < other.name
         elif isinstance(other, str):
@@ -60,7 +61,7 @@ class Label(ABC):
     @classmethod
     def labels(cls)-> Dict[str, Any]:
         """加载标签"""
-        with open(Path.LABELS.value, 'r', encoding='utf-8') as f:
+        with open(Path.LABELS, 'r', encoding='utf-8') as f:
             labels = json.load(f)
             return labels[cls.type]
 

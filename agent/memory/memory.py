@@ -1,6 +1,7 @@
 
 from typing import Iterable, List, Union
 from enum import StrEnum, auto
+from abc import ABC, abstractmethod
 
 class Role(StrEnum):
     USER = "user"
@@ -19,13 +20,26 @@ class Message:
         
     def __str__(self):
         return f"{{{self.role}:{self.content}}}"
+
+    def addPromte(self,prmote):
+        self.content += " ".join([prmote])
     
 class Memory:
     """
         This class is used to store the messages that are sent between the agent and the environment.
     """
     def __init__(self):
-        self.content = []
+        self.content = [
+            {
+                Role.SYSTEM: """
+                    you are a rpg agent,you should speak a great adventure story ; design monster including appearence, skill and stats ; importantly, make player thoroughly enjoying it.
+                    your base function is:
+                    1.Tell an epic story set in a fantasy world 
+                    2.Run a DND combat system like a DM
+                    3.Release the quest in the form of an NPC
+                """
+            }
+        ]
 
     def _message(self, message: Union[Message, dict]) -> Message:
         """将输入转换为Message对象"""

@@ -1,6 +1,6 @@
-from enum import Enum
+from enum import StrEnum
 
-class Path(Enum):
+class Path(StrEnum):
     """
     Path constants
     """

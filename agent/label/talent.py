@@ -13,7 +13,8 @@ class TalentEffect:
     """
     param_name: str  # 影响的参数名称
     difficulty_modifier: float  # 难度系数修改值（带小数）
-    description: str  # 效果描述
+    description: str = ""  # 效果描述
+    original_difficult: Optional[float] = None  # 应用前的难度系数，用于取消天赋时恢复
 
 class Talent(TalentLabel):
     """
@@ -21,7 +22,7 @@ class Talent(TalentLabel):
     """
     def __init__(self, name: str, description: str = "", effects: Optional[List[TalentEffect]] = None):
 
-        self.name = name
+        super().__init__(name=name)
         self.description = description
         self.effects = effects or []
         self.active = True  # 才能是否激活
@@ -39,32 +40,27 @@ class Talent(TalentLabel):
         for effect in self.effects:
             param = params.get(effect.param_name)
             if param:
-                param.difficulty *= effect.difficulty_modifier
+                effect.original_difficult = param.difficult
+                param.difficult *= effect.difficulty_modifier
                 # 确保难度系数不会变为负数
-                param.difficulty = max(0.001, param.difficulty)
+                param.difficult = max(0.001, param.difficult)
+    
+    def unapply_to_params(self, params: Dict[str, Param]) -> None:
+        """撤销天赋对参数的效果，恢复为应用前的难度系数"""
+        if not self.active:
+            return
+        for effect in self.effects:
+            param = params.get(effect.param_name)
+            if param and effect.original_difficult is not None:
+                param.difficult = effect.original_difficult
+                effect.original_difficult = None
     
     
     def toggle(self) -> None:
 
         self.active = not self.active
-        if self.active:
-            self.apply_to_params()
 
     def __str__(self) -> str:
 
         status = "激活" if self.active else "未激活"
         return f"{self.name} ({status}): {self.description}"
-
-
-    # 返回难度产生效果系数字典（最小0.001）
-    @property
-    def difficulty(self) -> float:
-        if not self.effect:
-            return 1.0
-        diffcultyDict = {}
-        for effect in self.effects:
-            self.difficulty = 1.0
-            if effect.status == True and self.active:        
-                diffculty *= effect.difficulty_modifier
-                diffcultyDict[effect.param_name] = diffculty*effect.difficulty_modifier
-        return diffcultyDict

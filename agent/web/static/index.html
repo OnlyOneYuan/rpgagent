@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>⚔️ 冒险世界 · RPG</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <!-- ===== 登录 / 注册 ===== -->
+  <div id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-logo">⚔️</div>
+      <h1 class="auth-title">冒险世界</h1>
+      <p class="auth-sub">多人联机 · 角色扮演</p>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">登录</button>
+        <button class="auth-tab" data-tab="register">注册</button>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <input type="text" id="login-name" placeholder="玩家名" autocomplete="username" required>
+        <input type="password" id="login-password" placeholder="密码" autocomplete="current-password" required>
+        <button type="submit" class="btn btn-primary btn-block">进入冒险世界</button>
+      </form>
+
+      <form id="register-form" class="auth-form hidden">
+        <input type="text" id="reg-name" placeholder="玩家名（最多 12 字）" required>
+        <input type="password" id="reg-password" placeholder="密码" required>
+        <div class="race-select-wrap">
+          <label class="race-label">选择种族</label>
+          <div id="race-options" class="race-options"></div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">创建角色</button>
+      </form>
+
+      <p id="auth-error" class="auth-error"></p>
+    </div>
+  </div>
+
+  <!-- ===== 游戏主界面 ===== -->
+  <div id="game-screen" class="game-screen hidden">
+    <aside class="sidebar">
+      <div class="sidebar-logo">⚔️ 冒险世界</div>
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="character">
+          <span class="nav-icon">🛡️</span><span>角色属性</span>
+        </button>
+        <button class="nav-item" data-view="equipment">
+          <span class="nav-icon">⚔️</span><span>装备</span>
+        </button>
+        <button class="nav-item" data-view="quests">
+          <span class="nav-icon">📜</span><span>任务</span>
+        </button>
+        <button class="nav-item" data-view="multiplayer">
+          <span class="nav-icon">🌐</span><span>多人联机</span>
+          <span id="online-dot" class="online-dot"></span>
+        </button>
+      </nav>
+
+      <div class="sidebar-player">
+        <div class="mini-avatar" id="mini-avatar">🧙</div>
+        <div class="mini-info">
+          <div class="mini-name" id="mini-name">--</div>
+          <div class="mini-meta" id="mini-meta">Lv.1 · 100 金币</div>
+        </div>
+      </div>
+      <button id="logout-btn" class="btn btn-ghost btn-block">退出登录</button>
+    </aside>
+
+    <main class="content">
+      <!-- 角色属性 -->
+      <section id="view-character" class="view active"></section>
+      <!-- 装备 -->
+      <section id="view-equipment" class="view"></section>
+      <!-- 任务 -->
+      <section id="view-quests" class="view"></section>
+      <!-- 多人联机 -->
+      <section id="view-multiplayer" class="view"></section>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
