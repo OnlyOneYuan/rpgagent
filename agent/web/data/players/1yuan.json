@@ -1,0 +1,448 @@
+{
+  "name": "1yuan",
+  "password_hash": "4b4771be070a17d77c51594d2c4acb4c64c23c6f89d74d820a4312d293ce8fe2",
+  "level": 2,
+  "exp": 80,
+  "gold": 135,
+  "chara": {
+    "name": "1yuan",
+    "param": {
+      "params": {
+        "communicate": {
+          "name": "communicate",
+          "value": 11.0,
+          "level": 2,
+          "difficult": 1.0
+        },
+        "strength": {
+          "name": "strength",
+          "value": 26,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "intelligence": {
+          "name": "intelligence",
+          "value": 9,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "luck": {
+          "name": "luck",
+          "value": 6,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "dexterity": {
+          "name": "dexterity",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        }
+      },
+      "res": {
+        "bleed_res": {
+          "name": "bleed_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "poison_res": {
+          "name": "poison_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "disease_res": {
+          "name": "disease_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "curse_res": {
+          "name": "curse_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "fire_res": {
+          "name": "fire_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "ice_res": {
+          "name": "ice_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "light_res": {
+          "name": "light_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        },
+        "dark_res": {
+          "name": "dark_res",
+          "value": 1,
+          "level": 0,
+          "difficult": 1.0
+        }
+      }
+    },
+    "talents": [],
+    "race": {
+      "name": "人类",
+      "param": {
+        "params": {
+          "communicate": {
+            "name": "communicate",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "strength": {
+            "name": "strength",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "intelligence": {
+            "name": "intelligence",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "luck": {
+            "name": "luck",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "dexterity": {
+            "name": "dexterity",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          }
+        },
+        "res": {
+          "bleed_res": {
+            "name": "bleed_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "poison_res": {
+            "name": "poison_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "disease_res": {
+            "name": "disease_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "curse_res": {
+            "name": "curse_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "fire_res": {
+            "name": "fire_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "ice_res": {
+            "name": "ice_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "light_res": {
+            "name": "light_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          },
+          "dark_res": {
+            "name": "dark_res",
+            "value": 1,
+            "level": 0,
+            "difficult": 1.0
+          }
+        }
+      },
+      "talents": []
+    }
+  },
+  "equipped": {},
+  "inventory": [
+    {
+      "item_id": "2359741f96",
+      "name": "铁剑",
+      "slot": "weapon",
+      "rarity": "common",
+      "stats": {
+        "attack": 5
+      },
+      "description": "新手村铁匠打造的普通铁剑",
+      "level": 1,
+      "require": {},
+      "required_level": 1,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "581a3bb159",
+      "name": "皮甲",
+      "slot": "armor",
+      "rarity": "common",
+      "stats": {
+        "defense": 4,
+        "health": 10
+      },
+      "description": "坚韧的皮质护甲",
+      "level": 1,
+      "require": {},
+      "required_level": 1,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "c7eb333516",
+      "name": "铁盔",
+      "slot": "helmet",
+      "rarity": "common",
+      "stats": {
+        "defense": 2,
+        "health": 5
+      },
+      "description": "保护头部的铁质头盔",
+      "level": 1,
+      "require": {},
+      "required_level": 1,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "62f2729b16",
+      "name": "布靴",
+      "slot": "boots",
+      "rarity": "common",
+      "stats": {
+        "speed": 3
+      },
+      "description": "轻便的布制靴子",
+      "level": 1,
+      "require": {},
+      "required_level": 1,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "28ace4d61c",
+      "name": "生命戒指",
+      "slot": "ring",
+      "rarity": "uncommon",
+      "stats": {
+        "health": 25
+      },
+      "description": "蕴含生命之力的戒指",
+      "level": 1,
+      "require": {},
+      "required_level": 3,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "f8f6a2fe49",
+      "name": "护身符",
+      "slot": "necklace",
+      "rarity": "uncommon",
+      "stats": {
+        "magic": 4,
+        "luck": 2
+      },
+      "description": "幸运护身符，佩戴者受祝福",
+      "level": 1,
+      "require": {},
+      "required_level": 3,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "63c1383006",
+      "name": "精钢长剑",
+      "slot": "weapon",
+      "rarity": "rare",
+      "stats": {
+        "attack": 12,
+        "speed": 2
+      },
+      "description": "锋利的精钢长剑",
+      "level": 1,
+      "require": {
+        "strength": 12
+      },
+      "required_level": 6,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "6b184db8b9",
+      "name": "秘银铠甲",
+      "slot": "armor",
+      "rarity": "rare",
+      "stats": {
+        "defense": 9,
+        "health": 30,
+        "magic": 3
+      },
+      "description": "秘银打造的高级铠甲",
+      "level": 1,
+      "require": {},
+      "required_level": 6,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "e1293ff9c9",
+      "name": "火焰戒指",
+      "slot": "ring",
+      "rarity": "epic",
+      "stats": {
+        "fire_res": 15,
+        "magic": 6
+      },
+      "description": "蕴藏火焰之力的戒指",
+      "level": 1,
+      "require": {},
+      "required_level": 10,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "e84bc65a86",
+      "name": "龙鳞项链",
+      "slot": "necklace",
+      "rarity": "epic",
+      "stats": {
+        "attack": 6,
+        "fire_res": 20,
+        "ice_res": 10
+      },
+      "description": "以龙鳞制成的珍贵项链",
+      "level": 1,
+      "require": {
+        "luck": 8
+      },
+      "required_level": 10,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "a348ded487",
+      "name": "风暴战靴",
+      "slot": "boots",
+      "rarity": "rare",
+      "stats": {
+        "speed": 9,
+        "dexterity": 3
+      },
+      "description": "注入风暴之力的战靴",
+      "level": 1,
+      "require": {},
+      "required_level": 6,
+      "owner": "1yuan"
+    },
+    {
+      "item_id": "c7dbbfd49c",
+      "name": "圣光头盔",
+      "slot": "helmet",
+      "rarity": "epic",
+      "stats": {
+        "defense": 6,
+        "light_res": 15,
+        "intelligence": 4
+      },
+      "description": "沐浴圣光的头盔",
+      "level": 1,
+      "require": {
+        "intelligence": 10
+      },
+      "required_level": 10,
+      "owner": "1yuan"
+    }
+  ],
+  "tasks": [
+    {
+      "task_id": "caa040e8",
+      "name": "初次试炼",
+      "description": "前往村外的训练场，击败 3 只史莱姆，证明你的勇气。",
+      "due_date": null,
+      "status": "completed",
+      "reward_gold": 30,
+      "reward_exp": 50,
+      "reward_param": {
+        "strength": 10
+      }
+    },
+    {
+      "task_id": "ef7922c7",
+      "name": "采集草药",
+      "description": "为药师采集 5 株月光草，用于制作治疗药剂。",
+      "due_date": null,
+      "status": "completed",
+      "reward_gold": 25,
+      "reward_exp": 40,
+      "reward_param": {
+        "intelligence": 8
+      }
+    },
+    {
+      "task_id": "e5901fdf",
+      "name": "守护粮仓",
+      "description": "击退潜入粮仓的老鼠群，保护村民的过冬粮食。",
+      "due_date": null,
+      "status": "available",
+      "reward_gold": 40,
+      "reward_exp": 60,
+      "reward_param": {
+        "dexterity": 8
+      }
+    },
+    {
+      "task_id": "68b13014",
+      "name": "送信任务",
+      "description": "将紧急信件送往邻近的村落，途中注意避开狼群。",
+      "due_date": null,
+      "status": "available",
+      "reward_gold": 20,
+      "reward_exp": 30,
+      "reward_param": {
+        "luck": 10
+      }
+    },
+    {
+      "task_id": "4b4a7154",
+      "name": "矿洞探险",
+      "description": "深入废弃矿洞，带回 3 块铁矿矿石。",
+      "due_date": null,
+      "status": "completed",
+      "reward_gold": 60,
+      "reward_exp": 90,
+      "reward_param": {
+        "strength": 15,
+        "luck": 5
+      }
+    },
+    {
+      "task_id": "2cadfeb5",
+      "name": "讨伐狼王",
+      "description": "击败袭击商队的狼王，为民除害。",
+      "due_date": null,
+      "status": "available",
+      "reward_gold": 100,
+      "reward_exp": 150,
+      "reward_param": {
+        "dexterity": 12,
+        "strength": 10
+      }
+    }
+  ]
+}
