@@ -1,6 +1,6 @@
 from agent.label.base import Label, LabelType
 from typing import Optional, Dict, Any
-from enum import Enum, StrEnum
+from enum import Enum, StrEnum, IntFlag, auto
 
 class BaseStats(StrEnum):
     ATK = "attack"
@@ -16,15 +16,18 @@ class ParamStats(StrEnum):
     luck = "luck"           # 幸运
     dexp = "dexterity"      # 敏捷  
 
-class ResStats(StrEnum):
-    bleed_res = "bleed_res"
-    poison_res = "poison_res"
-    disease_res = "disease_res"
-    curse_res = "curse_res"
-    fire_res = "fire_res"
-    ice_res = "ice_res"
-    light_res = "light_res"
-    dark_res = "dark_res"
+# 原ResStates修改为Ability
+# use intflag to caculate damage * res
+class Ability(IntFlag):
+    NONE    = 0
+    bleed   = auto()
+    poison  = auto()
+    disease = auto()
+    curse   = auto()
+    fire    = auto()
+    ice     = auto()
+    light   = auto()
+    dark    = auto()
 
 class Param(Label):
     """

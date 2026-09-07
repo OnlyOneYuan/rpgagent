@@ -1,6 +1,8 @@
 agent_rpg/
 .codebuddy/
 .vscode/
+__pycache__/
+*.pyc
 test_talent_levelup.py
 *.txt
 *.csv
