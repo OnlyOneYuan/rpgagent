@@ -1,3 +1,4 @@
+# chara related params
 from agent.label.base import Label, LabelType
 from typing import Optional, Dict, Any
 from enum import Enum, StrEnum, IntFlag, auto
@@ -16,18 +17,18 @@ class ParamStats(StrEnum):
     luck = "luck"           # 幸运
     dexp = "dexterity"      # 敏捷  
 
-# 原ResStates修改为Ability
+# 原ResStates修改为Attribute,移动到ability.py
 # use intflag to caculate damage * res
-class Ability(IntFlag):
-    NONE    = 0
-    bleed   = auto()
-    poison  = auto()
-    disease = auto()
-    curse   = auto()
-    fire    = auto()
-    ice     = auto()
-    light   = auto()
-    dark    = auto()
+# class Ability(IntFlag):
+#     NONE    = 0
+#     bleed   = auto()
+#     poison  = auto()
+#     disease = auto()
+#     curse   = auto()
+#     fire    = auto()
+#     ice     = auto()
+#     light   = auto()
+#     dark    = auto()
 
 class Param(Label):
     """
