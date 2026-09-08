@@ -4,7 +4,6 @@ from enum import Enum,auto
 from abc import ABC, abstractmethod
 from typing import Dict, Any
 from agent.config.path import Path
-import os
 
 class LabelType(Enum):
     """标签类型枚举"""

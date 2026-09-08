@@ -26,6 +26,10 @@ class DamageType(StrEnum):
     DISEASE  = "disease"    # 疾病
     CURSE    = "curse"      # 诅咒
 
+_damageTypelist = list(DamageType)
+damageTypeBin = {
+    _damageTypelist[i]:2**i for i in range(len(_damageTypelist))
+}
 
 # 伤害类型 -> 减免抗性属性名（物理无对应抗性，由防御减免）
 RESISTANCE_MAP: Dict[DamageType, Optional[str]] = {
@@ -55,10 +59,10 @@ DAMAGE_LABELS: Dict[DamageType, str] = {
 
 class StatusEffect(StrEnum):
     """持续状态效果"""
-    POISON  = "poison"    # 中毒：回合结束持续掉血
-    BLEED   = "bleed"     # 流血：回合结束持续掉血
+    POISON  = "poison"    # 中毒：回合结束掉血上限（不同技能可叠加）
+    BLEED   = "bleed"     # 流血：回合结束掉血，根据程度不同，决定流血是否治愈（可叠加）
     BURN    = "burn"      # 灼烧：回合结束持续掉血
-    FREEZE  = "freeze"    # 冰冻：无法行动
+    FREEZE  = "freeze"    # 冰冻：行动受限
     STUN    = "stun"      # 眩晕：无法行动
     WEAKEN  = "weaken"    # 虚弱：攻击降低 30%
     FRAGILE = "fragile"   # 易碎：防御降低 30%
@@ -90,16 +94,16 @@ class Skill:
 
     def to_dict(self) -> dict:
         return {
-            "name": self.name,
-            "description": self.description,
-            "dmg_type": self.dmg_type.value if self.dmg_type else None,
-            "power": self.power,
-            "effect": self.effect.value if self.effect else None,
-            "effect_chance": self.effect_chance,
+            "name"          : self.name,
+            "description"   : self.description,
+            "dmg_type"      : self.dmg_type.value if self.dmg_type else None,
+            "power"         : self.power,
+            "effect"        : self.effect.value if self.effect else None,
+            "effect_chance" : self.effect_chance,
         }
 
     def __str__(self) -> str:
-        return f"{self.name}：{self.description}"
+        return f"{self.name}:{self.description}"
 
 
 class BattleUnit:
@@ -108,16 +112,16 @@ class BattleUnit:
     def __init__(self, name: str, level: int, max_hp: int, attack: int,
                  defense: int, speed: int, magic: int,
                  resistance: Optional[Dict[str, int]] = None, luck: int = 0):
-        self.name = name
-        self.level = level
+        self.name   = name
+        self.level  = level
         self.max_hp = max_hp
-        self.hp = max_hp
-        self.attack = attack
+        self.hp     = max_hp
+        self.attack  = attack
         self.defense = defense
-        self.speed = speed
-        self.magic = magic
-        self.luck = luck
-        self.resistance: Dict[str, int] = resistance or {k: 0 for k in RES_NAMES}
+        self.speed  = speed
+        self.magic  = magic
+        self.luck   = luck
+        self.resistance: Dict[str, int]      = resistance or {k: 0 for k in RES_NAMES}
         self.status: Dict[StatusEffect, int] = {}  # 效果 -> 剩余回合数
 
     # ---------- 构建 ----------
@@ -126,15 +130,15 @@ class BattleUnit:
         """从玩家构建战斗单位（复用 compute_stats，包含装备与天赋加成）"""
         stats = compute_stats(player)
         return cls(
-            name=player.name,
-            level=player.level,
-            max_hp=stats["health"]["total"],
-            attack=stats["attack"]["total"],
-            defense=stats["defense"]["total"],
-            speed=stats["speed"]["total"],
-            magic=stats["magic"]["total"],
-            resistance={k: stats[k]["total"] for k in RES_NAMES},
-            luck=stats["luck"]["total"],
+            name    =player.name,
+            level   =player.level,
+            max_hp  =stats["health"]["total"],
+            attack  =stats["attack"]["total"],
+            defense =stats["defense"]["total"],
+            speed   =stats["speed"]["total"],
+            magic   =stats["magic"]["total"],
+            resistance ={k: stats[k]["total"] for k in RES_NAMES},
+            luck    =stats["luck"]["total"],
         )
 
     # ---------- 生命 ----------
@@ -170,6 +174,7 @@ class BattleUnit:
     def has_status(self, effect: StatusEffect) -> bool:
         return effect in self.status
 
+    #! need repair FREEZE BLEE STUN
     def can_act(self) -> bool:
         """冰冻 / 眩晕状态下无法行动"""
         return not (self.has_status(StatusEffect.FREEZE) or self.has_status(StatusEffect.STUN))
@@ -185,32 +190,34 @@ class BattleUnit:
     def add_status(self, effect: StatusEffect, turns: int) -> bool:
         """附加状态效果；异常类受对应抗性影响（抗性 ≥ 50 免疫）"""
         status_res = {
-            StatusEffect.POISON: "poison_res",
-            StatusEffect.BLEED: "bleed_res",
-            StatusEffect.BURN: "fire_res",
-            StatusEffect.FREEZE: "ice_res",
+            StatusEffect.POISON : "poison_res",
+            StatusEffect.BLEED  : "bleed_res",
+            StatusEffect.BURN   : "fire_res",
+            StatusEffect.FREEZE : "ice_res",
         }
-        res_name = status_res.get(effect)
-        if res_name and self.resistance.get(res_name, 0) >= 50:
-            return False
-        if effect in (StatusEffect.FREEZE, StatusEffect.STUN):
-            turns = 1  # 硬控最多 1 回合
-        self.status[effect] = max(self.status.get(effect, 0), turns)
-        return True
+        # ! need to change status logic 
+        # res_name = status_res.get(effect)
+        # if res_name and self.resistance.get(res_name, 0) >= 50:
+        #     return False
+        # if effect in (StatusEffect.FREEZE, StatusEffect.STUN):
+        #     turns = 1  # 硬控最多 1 回合
+        # self.status[effect] = max(self.status.get(effect, 0), turns)
+        # return True
 
     def tick_status(self) -> List[str]:
         """回合结束：结算持续伤害并刷新状态回合数，返回日志"""
         logs: List[str] = []
-        for effect in (StatusEffect.POISON, StatusEffect.BLEED, StatusEffect.BURN):
-            if effect in self.status:
-                dmg = max(1, self.max_hp // 20)
-                real = self.take_damage(dmg)
-                logs.append(f"{self.name} 因{STATUS_LABELS[effect]}损失 {real} 点生命")
-        for effect in list(self.status):
-            if self.status[effect] <= 1:
-                del self.status[effect]
-            else:
-                self.status[effect] -= 1
+        # ! need change
+        # for effect in (StatusEffect.POISON, StatusEffect.BLEED, StatusEffect.BURN):
+        #     if effect in self.status:
+        #         dmg = max(1, self.max_hp // 20)
+        #         real = self.take_damage(dmg)
+        #         logs.append(f"{self.name} 因{STATUS_LABELS[effect]}损失 {real} 点生命")
+        # for effect in list(self.status):
+        #     if self.status[effect] <= 1:
+        #         del self.status[effect]
+        #     else:
+        #         self.status[effect] -= 1
         return logs
 
 

@@ -1,4 +1,5 @@
 # chara related params
+from agent.fight.base import RESISTANCE_MAP
 from agent.label.base import Label, LabelType
 from typing import Optional, Dict, Any
 from enum import Enum, StrEnum, IntFlag, auto
@@ -17,18 +18,7 @@ class ParamStats(StrEnum):
     luck = "luck"           # 幸运
     dexp = "dexterity"      # 敏捷  
 
-# 原ResStates修改为Attribute,移动到ability.py
-# use intflag to caculate damage * res
-# class Ability(IntFlag):
-#     NONE    = 0
-#     bleed   = auto()
-#     poison  = auto()
-#     disease = auto()
-#     curse   = auto()
-#     fire    = auto()
-#     ice     = auto()
-#     light   = auto()
-#     dark    = auto()
+# 伤害属性原 ResStates 已合并到fight RESISTANCE_MAP
 
 class Param(Label):
     """
@@ -83,7 +73,7 @@ class ParamSet:
             pname : Param(pname, kwargs.get(pname, 1)) for pname in ParamStats
         }
         self.res: Dict[str, Param] = {
-            rname : Param(rname, kwargs.get(rname, 1)) for rname in ResStats
+            rname : Param(rname, kwargs.get(rname, 1)) for rname in RESISTANCE_MAP.values()
         }
         for par in self.params.values():
             if par.level < 0:
