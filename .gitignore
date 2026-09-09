@@ -10,3 +10,4 @@ test_talent_levelup.py
 *.xls
 *.xlsm
 *.xlsb
+agent\web\data\players\*
