@@ -1,89 +1,284 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>⚔️ 冒险世界 · RPG</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG 游戏前端界面原型 (含战斗状态切换)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background-color: #121212; color: #e0e0e0;
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
+
+        /* --- 顶部导航 --- */
+        nav {
+            background: #1e1e1e; border-bottom: 1px solid #333;
+            display: flex; padding: 0 20px; align-items: center;
+        }
+        .nav-btn {
+            padding: 15px 25px; cursor: pointer; border: none;
+            background: transparent; color: #aaa; font-size: 16px;
+            transition: 0.3s; border-bottom: 3px solid transparent;
+        }
+        .nav-btn:hover { color: #fff; background: #2a2a2a; }
+        .nav-btn.active { color: #4caf50; border-bottom: 3px solid #4caf50; }
+        
+        /* 战斗触发按钮样式 */
+        .combat-trigger {
+            margin-left: auto; padding: 8px 20px; background: #d32f2f; 
+            color: #fff; border: none; border-radius: 4px; cursor: pointer;
+            font-size: 14px; transition: 0.3s;
+        }
+        .combat-trigger:hover { background: #f44336; }
+
+        /* --- 内容区域通用 --- */
+        .page { display: none; flex: 1; padding: 20px; overflow-y: auto; }
+        .page.active { display: flex; gap: 20px; }
+        .panel { background: #1e1e1e; border: 1px solid #333; border-radius: 8px; padding: 15px; }
+        h2 { font-size: 18px; margin-bottom: 15px; color: #4caf50; border-bottom: 1px solid #333; padding-bottom: 8px; }
+
+        /* --- 1. 背包与仓库界面 --- */
+        .bag-container, .warehouse-container { flex: 1; display: flex; flex-direction: column; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 8px; flex: 1; }
+        .slot {
+            aspect-ratio: 1; background: #2a2a2a; border: 1px solid #444; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; cursor: pointer; transition: 0.2s; position: relative;
+        }
+        .slot:hover { border-color: #4caf50; background: #333; }
+        .slot .qty { position: absolute; bottom: 2px; right: 4px; font-size: 10px; color: #fff; text-shadow: 1px 1px 0 #000;}
+        .tab-switch { display: flex; gap: 10px; margin-bottom: 10px; }
+        .tab-btn { padding: 5px 15px; background: #333; border: none; color: #ccc; border-radius: 4px; cursor: pointer;}
+        .tab-btn.active { background: #4caf50; color: #fff; }
+
+        /* --- 2. 战斗界面 (全屏覆盖) --- */
+        #combat-page {
+            flex-direction: column; align-items: center; justify-content: space-between; 
+            height: 100%; padding: 20px; background: #121212;
+        }
+        .combat-arena {
+            flex: 1; width: 100%; max-width: 800px;
+            background: linear-gradient(to bottom, #1a252c, #0f141b);
+            border-radius: 8px; border: 1px solid #333;
+            display: flex; justify-content: space-around; align-items: center; padding: 20px;
+        }
+        .combatant { text-align: center; width: 200px; }
+        .avatar { 
+            width: 120px; height: 120px; background: #333; border-radius: 50%; 
+            margin: 0 auto 10px; border: 3px solid #4caf50; 
+            display: flex; align-items: center; justify-content: center; font-size: 40px;
+        }
+        .enemy .avatar { border-color: #f44336; }
+        .hp-bar { height: 10px; background: #333; border-radius: 5px; overflow: hidden; margin-top: 5px;}
+        .hp-fill { height: 100%; background: #4caf50; transition: 0.3s;}
+        .enemy .hp-fill { background: #f44336; }
+        
+        .combat-log {
+            width: 100%; max-width: 800px; height: 120px;
+            background: #000; border: 1px solid #333; border-radius: 4px;
+            padding: 10px; font-size: 14px; line-height: 1.6;
+            margin: 15px 0; overflow-y: auto; color: #ccc;
+        }
+        .log-dmg { color: #ff5252; } .log-heal { color: #69f0ae; } .log-desc { color: #ffd740; font-style: italic;}
+
+        .skill-bar { display: flex; gap: 10px; width: 100%; max-width: 800px; justify-content: center; flex-wrap: wrap;}
+        .skill-btn {
+            padding: 12px 20px; background: #2a2a2a; border: 1px solid #444;
+            border-radius: 6px; color: #fff; cursor: pointer; min-width: 100px;
+            transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+        }
+        .skill-btn:hover { background: #4caf50; border-color: #4caf50; transform: translateY(-2px); }
+        .skill-name { font-weight: bold; } .skill-desc { font-size: 10px; color: #aaa; margin-top: 4px;}
+        .skill-btn:hover .skill-desc { color: #fff; }
+        
+        /* 结束战斗按钮 */
+        .end-combat-btn {
+            margin-top: 10px; padding: 10px 30px; background: #555; border: none;
+            color: #fff; border-radius: 4px; cursor: pointer; font-size: 14px;
+        }
+        .end-combat-btn:hover { background: #777; }
+
+        /* --- 3. 状态栏界面 --- */
+        .attr-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .attr-item { display: flex; justify-content: space-between; background: #2a2a2a; padding: 8px 12px; border-radius: 4px;}
+        .buff-grid { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;}
+        .buff-icon { 
+            width: 48px; height: 48px; background: #333; border: 1px solid #444; 
+            border-radius: 6px; display: flex; align-items: center; justify-content: center; 
+            font-size: 20px; position: relative; cursor: help;
+        }
+        .buff-icon.buff { border-color: #4caf50; } .buff-icon.debuff { border-color: #f44336; }
+        .buff-tip { display: none; position: absolute; bottom: 110%; left: 50%; transform: translateX(-50%); background: #000; padding: 5px 10px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 10;}
+        .buff-icon:hover .buff-tip { display: block; }
+
+        /* --- 4. 任务界面 --- */
+        .quest-item { background: #2a2a2a; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #4caf50;}
+        .quest-title { font-size: 16px; font-weight: bold; margin-bottom: 5px;}
+        .quest-desc { font-size: 13px; color: #aaa; margin-bottom: 8px;}
+        .quest-progress { font-size: 12px; color: #4caf50;}
+    </style>
 </head>
 <body>
 
-  <!-- ===== 登录 / 注册 ===== -->
-  <div id="auth-screen" class="auth-screen">
-    <div class="auth-card">
-      <div class="auth-logo">⚔️</div>
-      <h1 class="auth-title">冒险世界</h1>
-      <p class="auth-sub">多人联机 · 角色扮演</p>
+    <!-- 顶部导航 -->
+    <nav id="main-nav">
+        <button class="nav-btn active" onclick="switchPage('inventory-page', this)">🎒 背包/仓库</button>
+        <button class="nav-btn" onclick="switchPage('status-page', this)">📊 状态</button>
+        <button class="nav-btn" onclick="switchPage('quest-page', this)">📜 任务</button>
+        
+        <!-- 战斗触发按钮 (仅在非战斗状态显示) -->
+        <button class="combat-trigger" id="enterCombatBtn" onclick="enterCombat()">⚔️ 遭遇敌人 (进入战斗)</button>
+    </nav>
 
-      <div class="auth-tabs">
-        <button class="auth-tab active" data-tab="login">登录</button>
-        <button class="auth-tab" data-tab="register">注册</button>
-      </div>
-
-      <form id="login-form" class="auth-form">
-        <input type="text" id="login-name" placeholder="玩家名" autocomplete="username" required>
-        <input type="password" id="login-password" placeholder="密码" autocomplete="current-password" required>
-        <button type="submit" class="btn btn-primary btn-block">进入冒险世界</button>
-      </form>
-
-      <form id="register-form" class="auth-form hidden">
-        <input type="text" id="reg-name" placeholder="玩家名（最多 12 字）" required>
-        <input type="password" id="reg-password" placeholder="密码" required>
-        <div class="race-select-wrap">
-          <label class="race-label">选择种族</label>
-          <div id="race-options" class="race-options"></div>
+    <!-- 1. 背包与仓库界面 -->
+    <div id="inventory-page" class="page active">
+        <div class="bag-container panel">
+            <h2>🎒 随身背包 (5/20)</h2>
+            <div class="grid">
+                <div class="slot">🗡️<span class="qty">1</span></div>
+                <div class="slot">🛡️<span class="qty">1</span></div>
+                <div class="slot">🧪<span class="qty">5</span></div>
+                <div class="slot">🍖<span class="qty">12</span></div>
+                <div class="slot">💍</div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div>
+            </div>
         </div>
-        <button type="submit" class="btn btn-primary btn-block">创建角色</button>
-      </form>
-
-      <p id="auth-error" class="auth-error"></p>
+        <div class="warehouse-container panel">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <h2 style="border:none; margin:0; padding:0;">🏠 个人仓库</h2>
+                <div class="tab-switch">
+                    <button class="tab-btn active">全部</button>
+                    <button class="tab-btn">装备</button>
+                    <button class="tab-btn">材料</button>
+                </div>
+            </div>
+            <div class="grid">
+                <div class="slot">⚔️<span class="qty">1</span></div>
+                <div class="slot">🏹<span class="qty">1</span></div>
+                <div class="slot">📜<span class="qty">3</span></div>
+                <div class="slot">🪙<span class="qty">99</span></div>
+                <div class="slot">🧵<span class="qty">45</span></div>
+                <div class="slot">🪨<span class="qty">20</span></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div><div class="slot"></div>
+                <div class="slot"></div><div class="slot"></div>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- ===== 游戏主界面 ===== -->
-  <div id="game-screen" class="game-screen hidden">
-    <aside class="sidebar">
-      <div class="sidebar-logo">⚔️ 冒险世界</div>
-      <nav class="sidebar-nav">
-        <button class="nav-item active" data-view="character">
-          <span class="nav-icon">🛡️</span><span>角色属性</span>
-        </button>
-        <button class="nav-item" data-view="equipment">
-          <span class="nav-icon">⚔️</span><span>装备</span>
-        </button>
-        <button class="nav-item" data-view="quests">
-          <span class="nav-icon">📜</span><span>任务</span>
-        </button>
-        <button class="nav-item" data-view="multiplayer">
-          <span class="nav-icon">🌐</span><span>多人联机</span>
-          <span id="online-dot" class="online-dot"></span>
-        </button>
-      </nav>
-
-      <div class="sidebar-player">
-        <div class="mini-avatar" id="mini-avatar">🧙</div>
-        <div class="mini-info">
-          <div class="mini-name" id="mini-name">--</div>
-          <div class="mini-meta" id="mini-meta">Lv.1 · 100 金币</div>
+    <!-- 2. 战斗界面 (默认隐藏) -->
+    <div id="combat-page" class="page">
+        <div class="combat-arena">
+            <div class="combatant player">
+                <div class="avatar">🧙‍♂️</div>
+                <div>勇者 亚瑟</div>
+                <div class="hp-bar"><div class="hp-fill" style="width: 85%;"></div></div>
+                <div style="font-size:12px; margin-top:4px; color:#aaa;">HP: 850 / 1000</div>
+            </div>
+            <div style="font-size: 30px; color: #555; font-weight: bold;">VS</div>
+            <div class="combatant enemy">
+                <div class="avatar">🐉</div>
+                <div>深渊巨龙</div>
+                <div class="hp-bar"><div class="hp-fill" style="width: 40%;"></div></div>
+                <div style="font-size:12px; margin-top:4px; color:#aaa;">HP: 1200 / 3000</div>
+            </div>
         </div>
-      </div>
-      <button id="logout-btn" class="btn btn-ghost btn-block">退出登录</button>
-    </aside>
 
-    <main class="content">
-      <!-- 角色属性 -->
-      <section id="view-character" class="view active"></section>
-      <!-- 装备 -->
-      <section id="view-equipment" class="view"></section>
-      <!-- 任务 -->
-      <section id="view-quests" class="view"></section>
-      <!-- 多人联机 -->
-      <section id="view-multiplayer" class="view"></section>
-    </main>
-  </div>
+        <div class="combat-log">
+            <div class="log-desc">【深渊巨龙】发出一声震耳欲聋的咆哮，暗金色的竖瞳中满是轻蔑与暴虐，周围的空气因它呼出的硫磺气息而扭曲。</div>
+            <div class="log-dmg">💥 深渊巨龙 使用了 [龙息吐息]！你受到了 150 点火焰伤害！</div>
+            <div class="log-desc">【勇者 亚瑟】紧咬下唇，眼神坚毅如铁。尽管盔甲被高温烤得通红，他依然稳稳握住长剑，没有丝毫退缩之意。</div>
+            <div class="log-heal">✨ 你使用了 [初级治疗术]！恢复了 200 点生命值。</div>
+            <div class="log-dmg">⚔️ 你使用了 [破甲斩]！对 深渊巨龙 造成 320 点物理伤害！[破甲] 效果触发，敌人防御降低 20%！</div>
+        </div>
 
-  <div id="toast" class="toast"></div>
+        <div class="skill-bar">
+            <button class="skill-btn">
+                <span class="skill-name">⚔️ 破甲斩</span>
+                <span class="skill-desc">消耗20MP | 造成150%物伤<br>30%概率降低目标20%防御</span>
+            </button>
+            <button class="skill-btn">
+                <span class="skill-name">🔥 烈焰风暴</span>
+                <span class="skill-desc">消耗45MP | 对敌方全体造成120%魔伤<br>附带2回合灼烧效果</span>
+            </button>
+            <button class="skill-btn">
+                <span class="skill-name">✨ 治疗术</span>
+                <span class="skill-desc">消耗30MP | 恢复自身300点HP<br>并清除1个负面状态</span>
+            </button>
+            <button class="skill-btn">
+                <span class="skill-name">🛡️ 铁壁防御</span>
+                <span class="skill-desc">消耗10MP | 本回合受到伤害减少50%<br>下回合攻击力提升15%</span>
+            </button>
+        </div>
+        
+        <!-- 结束战斗按钮 -->
+        <button class="end-combat-btn" onclick="exitCombat()">🏃 逃跑 / 结束战斗</button>
+    </div>
 
-  <script src="/static/js/app.js"></script>
-</body>
-</html>
+    <!-- 3. 状态栏界面 -->
+    <div id="status-page" class="page">
+        <div class="panel" style="flex: 1;">
+            <h2>📊 基础属性</h2>
+            <div class="attr-list">
+                <div class="attr-item"><span>等级</span><span style="color:#4caf50">45</span></div>
+                <div class="attr-item"><span>经验</span><span>12,450 / 50,000</span></div>
+                <div class="attr-item"><span>生命值</span><span>850 / 1000</span></div>
+                <div class="attr-item"><span>魔法值</span><span>320 / 450</span></div>
+                <div class="attr-item"><span>攻击力</span><span>145 (+20)</span></div>
+                <div class="attr-item"><span>防御力</span><span>88 (+12)</span></div>
+                <div class="attr-item"><span>暴击率</span><span>15.5%</span></div>
+                <div class="attr-item"><span>闪避率</span><span>8.2%</span></div>
+            </div>
+        </div>
+        <div class="panel" style="flex: 1;">
+            <h2>✨ 当前增益/减益 (Buffs)</h2>
+            <div class="buff-grid">
+                <div class="buff-icon buff">⚔️<div class="buff-tip">【攻击强化】攻击力+20，剩余 3 回合</div></div>
+                <div class="buff-icon buff">🛡️<div class="buff-tip">【铁壁】受到伤害-50%，剩余 1 回合</div></div>
+                <div class="buff-icon debuff">🔥<div class="buff-tip">【灼烧】每回合损失50HP，剩余 2 回合</div></div>
+                <div class="buff-icon buff">💨<div class="buff-tip">【疾风】闪避率+10%，剩余 5 回合</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 任务界面 -->
+    <div id="quest-page" class="page" style="flex-direction: column; max-width: 600px; margin: 0 auto; width: 100%;">
+        <div class="panel">
+            <h2>📜 当前任务</h2>
+            <div class="quest-item">
+                <div class="quest-title">主线：巨龙的巢穴</div>
+                <div class="quest-desc">前往叹息山脉，寻找深渊巨龙的踪迹，并收集3片龙鳞作为证据。</div>
+                <div class="quest-progress">进度：龙鳞 (1/3)</div>
+            </div>
+            <div class="quest-item">
+                <div class="quest-title">日常：清剿哥布林</div>
+                <div class="quest-desc">在村庄外围消灭5只哥布林，保护村民的安全。</div>
+                <div class="quest-progress">进度：击杀 (5/5) ✅</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 状态变量：记录当前是否在战斗中
+        let isInCombat = false;
+        let lastActivePage = 'inventory-page'; // 记录进入战斗前所在的页面
+
+        // 1. 常规页面切换逻辑
+        function switchPage(pageId, btnElement) {
+            if (isInCombat) return; // 战斗中禁止切换常规页面
+            
+            // 移除所有 active 状态
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            // 激活目标页面和按钮
+            document.getElementById(pageId).classList.add('active');
+            if(btnElement) btnElement.classList.add('active');
+            
+            lastActivePage =

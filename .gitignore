@@ -1,6 +1,7 @@
 agent_rpg/
 .codebuddy/
 .vscode/
+.env
 __pycache__/
 *.pyc
 test_talent_levelup.py

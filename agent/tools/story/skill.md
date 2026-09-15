@@ -93,10 +93,10 @@ description: 当需要生成或讲述 RPG 冒险故事、构建奇幻世界场�
     }
   ],
   "stats": {
-    "attack": 0, "defense": 0, "speed": 0, "magic": 0, "health": 0,
-    "communicate": 0, "strength": 0, "intelligence": 0, "luck": 0, "dexterity": 0,
-    "bleed_res": 0, "poison_res": 0, "disease_res": 0, "curse_res": 0,
-    "fire_res": 0, "ice_res": 0, "light_res": 0, "dark_res": 0
+    "attack"      : 0, "defense"    : 0, "speed"        : 0, "magic"    : 0, "health"   : 0,
+    "communicate" : 0, "strength"   : 0, "intelligence" : 0, "luck"     : 0, "dexterity": 0,
+    "bleed_res"   : 0, "poison_res" : 0, "disease_res"  : 0, "curse_res": 0,
+    "fire_res"    : 0, "ice_res"    : 0, "light_res"    : 0, "dark_res" : 0
   }
 }
 

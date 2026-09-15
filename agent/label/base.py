@@ -3,7 +3,7 @@ import json
 from enum import Enum,auto
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from agent.config.path import Path
+from agent.config.setting import Path
 
 class LabelType(Enum):
     """标签类型枚举"""
