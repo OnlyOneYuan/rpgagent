@@ -1,8 +1,8 @@
 from pydantic import BaseModel, validator, ConfigDict
+from abc import ABC
 from agent.label.param import Param,ParamSet
 from agent.label.talent import Talent
 from typing import Dict, List, Optional
-import pickle
 from json import load
 import gc
 from pathlib import Path
@@ -14,7 +14,7 @@ class RACE(BaseModel):
     talents: List[Talent]
 
 
-class Chara(BaseModel):
+class Chara(BaseModel,ABC):
     # model_config = ConfigDict(arbitrary_types_allowed=True)
     name: str
     param: ParamSet
@@ -76,12 +76,15 @@ class Chara(BaseModel):
             self._arryApply(params,talent)
         for param in race.param.params:
             self.param.params[param.name].value = param.value
-        
+
+class Player(Chara):
+    
+
 
 class CharaManager:
     """角色管理器，负责实例的追踪、修改标记与持久化存储"""
     
-    def __init__(self, save_path: str = "characters.json", batch_size: int = 1000):
+    def __init__(self, save_path: str = "characters.json", batch_size: int = 500):
         self.save_path = save_path
         self.batch_size = batch_size
         self._instances: List[Chara] = []
@@ -105,19 +108,19 @@ class CharaManager:
         if chara in self._modified_instances:
             self._modified_instances.remove(chara)
 
-    def add_talent(self, chara: Chara, talent: Talent) -> bool:
-        """为角色添加天赋，并标记为已修改（下次保存时持久化）"""
-        ok = chara.add_talent(talent)
-        if ok:
-            self.mark_as_modified(chara)
-        return ok
+    # def add_talent(self, chara: Chara, talent: Talent) -> bool:
+    #     """为角色添加天赋，并标记为已修改（下次保存时持久化）"""
+    #     ok = chara.add_talent(talent)
+    #     if ok:
+    #         self.mark_as_modified(chara)
+    #     return ok
 
-    def remove_talent(self, chara: Chara, talent: Talent) -> bool:
-        """为角色取消天赋，并标记为已修改（下次保存时持久化）"""
-        ok = chara.remove_talent(talent)
-        if ok:
-            self.mark_as_modified(chara)
-        return ok
+    # def remove_talent(self, chara: Chara, talent: Talent) -> bool:
+    #     """为角色取消天赋，并标记为已修改（下次保存时持久化）"""
+    #     ok = chara.remove_talent(talent)
+    #     if ok:
+    #         self.mark_as_modified(chara)
+    #     return ok
 
     def save_all(self) -> None:
         """增量保存：只处理被修改或新增的实例"""
@@ -126,3 +129,4 @@ class CharaManager:
     def load_all(self) -> List[Chara]:
         """加载所有实例到内存"""
         pass
+
