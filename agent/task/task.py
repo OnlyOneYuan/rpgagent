@@ -29,14 +29,15 @@ class Task:
                  result: Optional[dict] = None, reward_gold: int = 0, reward_exp: int = 0,
                  reward_param: Optional[Dict[str, int]] = None,
                  status: TaskStatus = TaskStatus.AVAILABLE, task_id: Optional[str] = None):
-        self.task_id = task_id or uuid.uuid4().hex[:8]
-        self.name = name
-        self.description = description
-        self.due_date = due_date
-        self.result = result or {}
-        self.reward_gold = reward_gold
-        self.reward_exp = reward_exp
+        self.task_id        = task_id or uuid.uuid4().hex[:8]
+        self.name           = name
+        self.description    = description
+        self.due_date       = due_date
+        self.result         = result or {}
+        self.reward_gold    = reward_gold
+        self.reward_exp     = reward_exp
         self.reward_param: Dict[str, int] = reward_param or {}  # 奖励属性值，如 {"strength": 20}
+        self.item           = None
         self.status = TaskStatus(status)
 
     def start(self) -> bool:

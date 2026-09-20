@@ -8,10 +8,10 @@ import random
 from enum import StrEnum
 from typing import TYPE_CHECKING, Dict, List, Optional
 
-if TYPE_CHECKING:
-    from agent.player.player import Player
+# if TYPE_CHECKING:
+#     from agent.player.player import Player
 
-from agent.player.player import RES_NAMES, compute_stats
+# from agent.player.player import RES_NAMES, compute_stats
 
 
 class DamageType(StrEnum):
