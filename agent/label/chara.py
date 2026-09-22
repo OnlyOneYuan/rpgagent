@@ -79,7 +79,7 @@ class Chara(BaseModel,ABC):
 
 class Player(Chara):
 
-    
+    id
 
 
 class CharaManager:
