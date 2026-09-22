@@ -78,6 +78,7 @@ class Chara(BaseModel,ABC):
             self.param.params[param.name].value = param.value
 
 class Player(Chara):
+
     
 
 

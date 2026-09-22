@@ -1,3 +1,5 @@
+# 任务模块
+## 注意该模块设计时只考虑了总共四个人组队的情况，更多人的情况需要重构
 from datetime import datetime
 from typing import Dict, List, Optional
 from enum import StrEnum

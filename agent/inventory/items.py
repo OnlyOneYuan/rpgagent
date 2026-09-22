@@ -8,8 +8,5 @@ class Item:
     params  :ParamSet
     pass
 
-class Bag:
-    pass
-
-class Equip(Bag):
-    pass
+class Armor(Item):
+    limit:int
