@@ -1,6 +1,7 @@
+from agent.inventory.items import Item
 
 class Bag:
     pass
 
-class Equipment(Bag):
+class Equip(Bag):
     pass
