@@ -3,10 +3,11 @@ from agent.memory.memory import Message
 from typing import List, Dict, Any, Literal, Optional, AsyncIterator
 from openai import OpenAI
 from pydantic import BaseModel, Field
+from agent.config.setting import Authorize 
 
 
 class API(ABC):
-    def __init__(self,base_key,base_url):
+    def __init__(self,base_key = None,base_url = None):
         self.base_key = base_key
         self.base_url = base_url
 
@@ -72,6 +73,10 @@ class OpenaiApi(API):
     }
 
     def __init__(self, base_key, base_url,**kwargs):
+        if base_key & base_url == None:
+            base_key = Authorize.KEY
+            base_url = Authorize.URL
+
         self.client = OpenAI(
             api_key = base_key,
             base_url= base_url
@@ -116,6 +121,7 @@ class OpenaiApi(API):
 class QwenApi(OpenaiApi):
 
     def __init__(self, base_key, base_url, **kwargs):
+        kwargs.setdefault("model", Authorize.MODEL)
         super().__init__(base_key, base_url, **kwargs)
 
     def stream(self):

@@ -13,7 +13,7 @@ from agent.fight.base import (
     calc_damage,
 )
 from agent.fight.enemy import Enemy
-from agent.player.player import Player
+# from agent.player.player import Player
 
 # 玩家可用的内置技能（后续可随职业 / 等级扩展）
 PLAYER_SKILLS: List[Skill] = [

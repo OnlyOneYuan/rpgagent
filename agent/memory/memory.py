@@ -21,17 +21,18 @@ class Message:
     def __str__(self):
         return f"{{{self.role}:{self.content}}}"
 
-    def addPromte(self,prmote):
-        self.content += " ".join([prmote])
+    def add_Prompt(self,prompt):
+        self.content += "\n".join([prompt])
     
 class Memory:
     """
         This class is used to store the messages that are sent between the agent and the environment.
     """
-    def __init__(self):
+    def __init__(self,system_prompt):
         self.content = [
             {
-                Role.SYSTEM: """
+                Role.SYSTEM: system_prompt or 
+                """
                     you are a rpg agent,you should speak a great adventure story ; design monster including appearence, skill and stats ; importantly, make player thoroughly enjoying it.
                     your base function is:
                     1.Tell an epic story set in a fantasy world 
@@ -41,14 +42,12 @@ class Memory:
             }
         ]
 
-    def _message(self, message: Union[Message, dict]) -> Message:
-        """将输入转换为Message对象"""
+    def _message(self, message: Union[Message, dict]) -> dict:
+        if isinstance(message, dict):
+            return message
         if isinstance(message, Message):
             return {message.role: message.content}
-        elif isinstance(message, dict):
-            return message
-        else:
-            raise TypeError(f"Expected Message or dict, got {type(message)}")
+        raise TypeError(f"Expected Message or dict, got {type(message).__name__}")
 
 
     def add(self, messages: Union[Message, dict, List[Union[Message, dict]]]) -> None:
