@@ -1,15 +1,16 @@
 from abc import abstractmethod,ABC
+import asyncio
+import json
 from agent.memory.memory import Message
 from typing import List, Dict, Any, Literal, Optional, AsyncIterator
 from openai import OpenAI
 from pydantic import BaseModel, Field
-from agent.config.setting import Authorize 
-
+from agent.config.setting import Authorize
 
 class API(ABC):
-    def __init__(self,base_key = None,base_url = None):
-        self.base_key = base_key
-        self.base_url = base_url
+
+    def __init__(self):
+        pass
 
     @abstractmethod
     async def stream(self,**kwargs) -> AsyncIterator[Message]:
@@ -31,7 +32,7 @@ class Responses(BaseModel):
     system_fingerprint: Optional[str] = None
 
     # --- 业务层便捷方法 (Facade) ---
-    
+
     @property
     def message(self) -> Message:
         """获取主回复消息 (通常是 choices[0].message)"""
@@ -62,45 +63,60 @@ class Responses(BaseModel):
 class OpenaiApi(API):
 
     SUPPORTED_ARGS = {
-        "model": str,
-        "messages": list,
+        "model": "",
+        "messages": [],
         "stream": True,
-        "temperature": float,
-        "max_tokens": int,
-        "top_p": float,
-        "frequency_penalty": float,
-        "presence_penalty": float
+        "temperature": 1.0,
+        "max_tokens": 4096,
+        "top_p": 1.0,
+        "frequency_penalty": 1.0,
+        "presence_penalty": 1.0
     }
 
-    def __init__(self, base_key, base_url,**kwargs):
-        if base_key & base_url == None:
-            base_key = Authorize.KEY
-            base_url = Authorize.URL
-
+    def __init__(self,
+                 api_key  = Authorize.KEY,
+                 base_url = Authorize.URL,
+                 max_concurrency=5,
+                 **kwargs
+                 ):
         self.client = OpenAI(
-            api_key = base_key,
-            base_url= base_url
-            )
+            api_key=api_key,
+            base_url=base_url
+        )
+
         if kwargs:
             self.SUPPORTED_ARGS.update(kwargs)
-    
-    def stream(self):
-        kwargs = self.SUPPORTED_ARGS
-        # 准备消息格式
-        stream = self.client.chat.completions.create(
-            model   = kwargs.get("model"),
-            messages= kwargs.get("messages"),
-            stream  = True,
-            extra_body  = kwargs.get("extra_body", {})
-        )
+        self._sem = asyncio.Semaphore(max_concurrency)
 
-        return Responses(
-            id=stream["id"],
-            object=stream["object"],
-            created=stream["created"],
-            model=stream["model"],
-            system_fingerprint=stream.get("system_fingerprint"),
-        )
+    async def stream(
+        self,prompt,**kwargs
+    ) -> AsyncIterator[str]:
+        """逐块产出增量文本。"""
+        async with self._sem:
+            stream = self.client.chat.completions.create(
+                **self.SUPPORTED_ARGS
+            )
+            for chunk in stream:
+                if chunk.choices:
+                    delta = chunk.choices[0].delta
+                    # 首尾 chunk 的 content 可能为 None，必须判空
+                    if delta and delta.content:
+                        yield delta.content
+                elif chunk.usage:
+                    # 用量信息可通过回调或单独属性获取，这里仅示例
+                    self.last_usage = chunk.usage
+
+    async def complete(self, prompt: str, **kwargs) -> str:
+        """把流式结果聚合成完整字符串。"""
+        parts = []
+        async for piece in self.stream(prompt, **kwargs):
+            parts.append(piece)
+        return "".join(parts)
+
+    async def batch(self, prompts) -> list:
+        """并发处理多个 prompt，保持返回顺序。"""
+        return await asyncio.gather(*(self.complete(p) for p in prompts))
+
     def chat(self):
         chat = self.client.chat.completions.create(
             model   = self.SUPPORTED_ARGS.get("model"),
@@ -117,18 +133,15 @@ class OpenaiApi(API):
             system_fingerprint=chat.system_fingerprint,
             choices=chat.choices
         )
-    
+
 class QwenApi(OpenaiApi):
 
-    def __init__(self, base_key, base_url, **kwargs):
-        kwargs.setdefault("model", Authorize.MODEL)
-        super().__init__(base_key, base_url, **kwargs)
+    def __init__(self,api_key=Authorize.KEY ,base_url=Authorize.URL ,max_concurrency = 5,messages = [],model = ""):
+        super().__init__(
+                        api_key  ,
+                        base_url ,
+                        max_concurrency = max_concurrency,
+                        messages = messages,
+                        model    = model
+                        )
 
-    def stream(self):
-        stream = super().stream().message.content
-        return stream
-    
-    def chat(self):
-        chat = super().chat().message.content
-        return chat
-        

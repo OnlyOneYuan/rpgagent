@@ -1,4 +1,4 @@
-"""敌人系统：敌人定义、模板库与按等级生成"""
+"""怪物系统："""
 from __future__ import annotations
 
 import random

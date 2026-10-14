@@ -1,4 +1,3 @@
-# 自动化脚本
 """自动生成并校验 requirements.txt"""
 import argparse
 import subprocess
@@ -8,9 +7,9 @@ from pathlib import Path
 
 
 def run(cmd, check=True):
-    print(f"[RUN] {' '.join(cmd)}")
-    return subprocess.run(cmd, check=check, capture_output=True, text=True)
-
+    cmd_str = " ".join(cmd) if isinstance(cmd, list) else cmd
+    print(f"[RUN] {cmd_str}")
+    return subprocess.run(cmd_str, check=check, capture_output=True, text=True, shell=True)
 
 def main():
     parser = argparse.ArgumentParser(description="生成项目 requirements.txt")
@@ -20,8 +19,23 @@ def main():
     parser.add_argument("--encoding", default="utf8")
     parser.add_argument("--no-pin", action="store_true", help="不固定版本号")
     parser.add_argument("--dry-run", action="store_true", help="仅打印不写入")
+    parser.add_argument("--check-pi", action="store_true", help="检查并输出 pi 的版本号")
     args = parser.parse_args()
 
+    # 1. 处理 pi 版本检查
+    pi_version = None
+    if args.check_pi:
+        try:
+            result = run(["pi", "--version"], check=False)
+            if result.returncode == 0:
+                pi_version = result.stdout.strip()
+                print(f"[PI VERSION] {pi_version}")
+            else:
+                print(f"[WARN] {result.stderr.strip()}", file=sys.stderr)
+        except FileNotFoundError:
+            print("[WARN] 未找到 pi 命令，请确认已安装并配置环境变量。", file=sys.stderr)
+
+    # 2. 处理项目目录和 requirements.txt 生成
     project = Path(args.project).resolve()
     output = Path(args.output) if args.output else project / "requirements.txt"
 
@@ -48,11 +62,11 @@ def main():
     except FileNotFoundError:
         sys.exit("[ERROR] 未找到 pipreqs，请先 pip install pipreqs")
 
-    # 备份
-    # if output.exists():
-    #     backup = output.with_suffix(f".bak.{datetime.now():%Y%m%d%H%M%S}")
-    #     output.rename(backup)
-    #     print(f"[INFO] 旧文件已备份至 {backup}")
+    # 3. 如果获取到了 pi 版本，将其追加写入到 requirements.txt
+    if pi_version:
+        with open(output, "a", encoding="utf8") as f:
+            f.write(f"\n# pi version: {pi_version}\n")
+        print(f"[OK] pi 版本已追加写入：{output}")
 
     print(f"[OK] 已生成：{output}")
     print("[TIP] 动态导入、Django INSTALLED_APPS 中的第三方 app 可能遗漏，请人工复核。")

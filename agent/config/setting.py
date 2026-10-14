@@ -8,8 +8,7 @@ api_key = os.getenv("API_KEY")
 base_url = os.getenv("API_BASE", "127.0.0.1:7777")
 model_name = os.getenv("MODEL_NAME")
 
-
-
+# read has problem,will be deleted
 class Authorize(StrEnum):
     KEY     = api_key
     URL     = base_url

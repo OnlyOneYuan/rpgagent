@@ -61,5 +61,5 @@ class Weapon(Equipment):
         super().__init__(name=name, **kwargs)
         self.handheld_type = handheld_type
         self.job_type      = job_type
-    
-    
+
+
