@@ -19,6 +19,6 @@ class Path(StrEnum):
     Path constants
     """
     LABELS = r".agent/config/labels.json"
-    SKILLS = r"./agent/tools"
+    SKILLS = r"./agent/skills"
 
 
