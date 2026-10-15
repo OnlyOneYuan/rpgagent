@@ -58,4 +58,5 @@ def parse_skill(skill_file: Path) -> Skill:
         path=skill_file,
         metadata=meta,
         body=body,
+        tags=tags
     )

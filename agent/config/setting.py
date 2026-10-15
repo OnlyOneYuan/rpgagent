@@ -14,11 +14,11 @@ class Authorize(StrEnum):
     URL     = base_url
     MODEL   = model_name
 
-class Path(StrEnum):
+class Paths(StrEnum):
     """
-    Path constants
+    Paths constants
     """
-    LABELS = r".agent/config/labels.json"
+    LABELS = r"./agent/config/labels.json"
     SKILLS = r"./agent/skills"
 
 

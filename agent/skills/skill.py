@@ -1,4 +1,4 @@
-from agent.config.setting import Path
+from agent.config.setting import Paths
 from os import listdir
 import yaml
 import re
@@ -19,10 +19,10 @@ class Skill:
     path: Ph
     content: Optional[str] = None
 
-skills = Path.SKILLS
+skills = Paths.SKILLS
 
 class SkillsManager:
-    def __init__(self, skills_directory: str = Path.SKILLS):
+    def __init__(self, skills_directory: str = Paths.SKILLS):
         self.skills_directory = Ph(skills_directory)
         self.skills: Dict[str, Skill] = {}
         self._discover_skills()

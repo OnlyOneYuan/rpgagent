@@ -3,7 +3,7 @@ import json
 from enum import Enum,auto
 from abc import ABC, abstractmethod
 from typing import Dict, Any
-from agent.config.setting import Path
+from agent.config.setting import Paths
 
 class LabelType(Enum):
     """标签类型枚举"""
@@ -35,14 +35,14 @@ class Label(ABC):
         if isinstance(other, Label):
             return self.name == other.name
         return False
-    
+
     def __lt__(self, other: "Label"):
         if isinstance(other, Label):
             return self.name < other.name
         elif isinstance(other, str):
             return self.name < other
         return NotImplemented
-    
+
     @property
     def name(self):
         return self._name
@@ -60,7 +60,7 @@ class Label(ABC):
     @classmethod
     def labels(cls)-> Dict[str, Any]:
         """加载标签"""
-        with open(Path.LABELS, 'r', encoding='utf-8') as f:
+        with open(Paths.LABELS, 'r', encoding='utf-8') as f:
             labels = json.load(f)
             return labels[cls.type]
 
@@ -72,13 +72,14 @@ class Label(ABC):
             return subclass
         return decorator
 
+    # 这个name是不是可以不用写
     @classmethod
     def get(cls,name,type:LabelType):
         """根据标签读取存放在文件中对应的描述"""
-        with open(Path.LABELS.value, 'r', encoding='utf-8') as f:
+        with open(Paths.LABELS, 'r', encoding='utf-8') as f:
             label_info = json.load(f)
             return label_info[type][name]
-        
+
 class LabelFactory:
     """标签工厂类"""
     @classmethod
@@ -86,22 +87,22 @@ class LabelFactory:
         """创建标签的工厂方法"""
         if label_type not in Label._registry:
             raise ValueError(f"Unsupported label type: {label_type}")
-        
+
         # 检查缓存
         cache_key = (label_type, kwargs.get('name'))
         if cache_key in Label._cache:
             return Label._cache[cache_key]
-        
+
         # 创建新标签
         label_class = Label._registry[label_type]
         label = label_class(**kwargs)
-        
+
         # 更新缓存
         if len(Label._cache) >= Label._max_size:
             Label._cache.clear()
         Label._cache[cache_key] = label
-     
-        return label    
+
+        return label
 
 @Label.register(LabelType.PERSONALITY)
 class PersonalityLabel(Label):
@@ -120,13 +121,13 @@ class PersonalityLabel(Label):
         else:
             # 处理关键字参数输入
             name = kwargs.get("name")  # 从关键字参数中获取name值
-        
+
         # 调用父类初始化，传入name参数
         super().__init__(name=name)
-        
+
         # 设置标签类型为PERSONALITY
         self._type = LabelType.PERSONALITY
-        
+
         # 设置个性属性
         if name not in self._personality:
             self._personality.append(name)
@@ -134,7 +135,7 @@ class PersonalityLabel(Label):
     @property
     def type(self):
         return self._type
-    
+
 @Label.register(LabelType.SKILL)
 class SkillLabel(Label):
     """技能标签类"""
@@ -145,7 +146,7 @@ class SkillLabel(Label):
     @property
     def type(self):
         return self._type
-    
+
 @Label.register(LabelType.TALENT)
 class TalentLabel(Label):
     """天赋标签类"""
@@ -175,7 +176,7 @@ class LabelSet(ABC):
 
 class LabelMap(ABC):
     """标签映射抽象基类，定义映射的通用行为"""
-    
+
     def __init__(self, map: Dict[str, Any] = None):
         # 使用 _map 作为内部存储，避免与外部属性冲突
         self._map: Dict[str, Any] = map or {}
@@ -207,7 +208,7 @@ class LabelMap(ABC):
 
     def to_dict(self) -> Dict[str, Any]:
         return self._map
-    
+
     def __str__(self):
         return str(self._map)
 
