@@ -1,4 +1,4 @@
-from agent.label.ability import Attribute, RES_KEYS, ResStats, RSkill
+from agent.label.effect import Attribute, RES_KEYS, ResStats, RSkill
 
 
 def test_ResStats_export():

@@ -1,9 +1,10 @@
 from collections.abc import Iterable
 from enum import StrEnum
 from pathlib import Path
+import re
 from agent.skill.model import Skill
 from agent.skill.parser import parse_skill
-from agent.config.setting import Path
+from agent.config.setting import Paths
 from xml.sax.saxutils import escape as _xml_escape
 
 
@@ -50,7 +51,7 @@ def matches(skill_tags: Iterable[str] | None,
 
 
 class SkillsManager:
-    def __init__(self, skills_directory: str | Path = Path.SKILLS, tag = None,
+    def __init__(self, skills_directory: str | Path = Paths.SKILLS, tag = None,
                  match_mode: MatchMode | str = MatchMode.ANY):
         self.skills_directory = Path(skills_directory)
         self.match_mode = MatchMode(match_mode)
