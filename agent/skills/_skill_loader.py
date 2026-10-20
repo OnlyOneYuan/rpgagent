@@ -108,11 +108,12 @@ def load_reference(skills: dict[str, Skill], name: str, rel: str) -> dict[str, A
 if __name__ == "__main__":
     import argparse, json
     p = argparse.ArgumentParser()
-    p.add_argument("--dir", default="./agent/tools")
+    p.add_argument("--dir", default="./agent/skills")
     p.add_argument("--name", help="指定技能名，加载完整正文")
     p.add_argument("--ref", help="references 下的相对路径")
     args = p.parse_args()
     skills = discover(Path(args.dir).resolve())
+    print(Path(args.dir).resolve())
     if args.name and args.ref:
         print(json.dumps(load_reference(skills, args.name, args.ref), ensure_ascii=False, indent=2))
     elif args.name:

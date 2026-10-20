@@ -20,5 +20,7 @@ class Paths(StrEnum):
     """
     LABELS = r"./agent/config/labels.json"
     SKILLS = r"./agent/skills"
+    # Qwen Code 技能目录（项目级，另外还会扫 ~/.qwen/skills）
+    QWEN_SKILLS = r"./agent/skills"
 
 

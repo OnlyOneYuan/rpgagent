@@ -5,7 +5,8 @@ import re
 from agent.skill.model import Skill
 from agent.skill.parser import parse_skill
 from agent.config.setting import Paths
-from xml.sax.saxutils import escape as _xml_escape
+from agent.skill.prompt import USAGE_TMPL as _USAGE_TMPL
+from agent.skill.prompt import render_skill_block
 
 
 class MatchMode(StrEnum):
@@ -96,26 +97,10 @@ class SkillsManager:
         if wanted:
             skills = {n: s for n, s in skills.items() if matches(s.tags, wanted, mode)}
 
-        if not skills:
-            tip = _xml_escape("、".join(sorted(wanted))) if wanted else ""
-            return f"<available_skills>\n  <!-- 无可用技能 {tip} -->\n</available_skills>"
+        hint = "、".join(sorted(wanted)) if wanted else ""
+        return render_skill_block(skills, with_tags=with_tags, empty_hint=hint)
 
-        parts = ["<available_skills>"]
-        for s in skills.values():
-            parts.append("  <skill>")
-            parts.append(f"    <name>{_xml_escape(s.name)}</name>")
-            parts.append(f"    <description>{_xml_escape(s.description.strip())}</description>")
-            if with_tags and s.tags:
-                parts.append(f"    <tags>{_xml_escape('、'.join(s.tags))}</tags>")
-            parts.append("  </skill>")
-        parts.append("</available_skills>")
-        return "\n".join(parts)
-
-    USAGE_TMPL = """<skill_usage>
-                    - 上面每项是一个可加载的技能，name 是唯一标识，必须原样引用，不得臆造。
-                    - 需要某个技能时，在回复第一行输出：USE_SKILL: <name>
-                    - 只能选上面列出的 name；不需要时直接正常回复。
-                    </skill_usage>"""
+    USAGE_TMPL = _USAGE_TMPL
 
     def build_system_prompt(self, base_prompt: str, tag=None,
                             match_mode: MatchMode | str | None = None) -> str:
