@@ -1,6 +1,7 @@
 agent_rpg/
 .codebuddy/
 .vscode/
+.pi-agnet/
 .env
 __pycache__/
 *.pyc
