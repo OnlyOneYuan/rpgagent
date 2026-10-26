@@ -4,7 +4,6 @@ agent_rpg/
 .env
 __pycache__/
 *.pyc
-test_talent_levelup.py
 *.txt
 *.csv
 *.xlsx

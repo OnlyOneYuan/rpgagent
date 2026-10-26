@@ -176,6 +176,8 @@ def build_tools(skills: Iterable[Skill], *, with_meta: bool = True) -> list[dict
     """
     items = list(skills)
     tools = [s.to_tool_schema() for s in items if s.kind is SkillKind.TOOL and s.enabled]
+    print(items[0].to_tool_schema())
+    print(tools)
     if with_meta and any(s.kind is SkillKind.PROMPT for s in items):
         tools.append(USE_SKILL_TOOL)
         tools.append(READ_SKILL_FILE_TOOL)

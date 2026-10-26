@@ -65,7 +65,8 @@ class SkillRegistry:
         if not isinstance(skill, Skill):
             raise TypeError(f"需要 Skill 实例，收到 {type(skill).__name__}")
         if skill.name in self.skills and not overwrite:
-            raise ValueError(f"技能已注册：{skill.name}（如需覆盖请 overwrite=True）")
+            # raise ValueError(f"技能已注册：{skill.name}（如需覆盖请 overwrite=True）")
+            return None
         self.skills[skill.name] = skill
         return skill
 
@@ -142,7 +143,7 @@ class SkillRegistry:
                       project_root: Optional[Path] = None,
                       tags: Optional[Iterable[str]] = None,
                       overwrite: bool = True) -> list[Skill]:
-        """注册 Qwen 技能目录里的技能，默认扫项目 `.qwen/skills` 与 `~/.qwen/skills`。"""
+        """注册 Qwen 技能目录里的技能，默认扫项目 `./agent/skills`。"""
         from agent.skill import qwen as qwen_source
 
         dirs = [directory] if isinstance(directory, (str, Path)) else directory
