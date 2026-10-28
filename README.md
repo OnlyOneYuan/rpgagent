@@ -8,19 +8,26 @@ RPG Agent 是一个基于大语言模型（LLM）的智能角色扮演代理框�
 - 多模态扩展：预留 TTS/STT 及立绘切换接口，支持语音交互与表情差分。
 
 ## 代码架构
-[用户/游戏引擎] 
-```      ️ 
-[RPG Agent Core] 
+[用户/游戏引擎]
+```      ️
+[RPG Agent Core]
    ├──  LLM Brain (Qwen/GPT-4/Claude)
    ├──  Memory Module (Short-term + Long-term)
    ├── ️ Action Planner (Tool Execution)
    └──  Persona Manager (State & Emotion)
-      ️ 
+      ️
 [Game World / Database]
    ├──  task Module
-   ├──  inventory Module 
+   ├──  inventory Module
    ├── ️ fight Module
    └──  base Module （important）
+```
+## 使用教程
+1. 在根目录下创建.env文件,按格式填入以下内容:
+```
+   MODEL_NAME      = "xxxx"     # 模型名, 根据你的服务端配置填写
+   API_BASE        = "xxxx"     # 改成你的 API 地址
+   API_KEY         = "xxxx"     # 改成你的 key
 ```
 
 ## 补充情况
@@ -81,4 +88,4 @@ RPG Agent 是一个基于大语言模型（LLM）的智能角色扮演代理框�
 - [ ] **多模态预留**：TTS / STT、立绘切换、表情差分，目前完全空白，先出接口定义即可。
 
 ### 说明
-- `agent/config/setting.py:22` 的路径写成 `r".agent/config/labels.json"`（少了斜杠），实际文件在 `agent/config/labels.json`；`SKILLS` 用的是相对路径 `./agent/tools`，依赖 CWD，建议改成基于文件位置的绝对路径。- [ ] 
+- `agent/config/setting.py:22` 的路径写成 `r".agent/config/labels.json"`（少了斜杠），实际文件在 `agent/config/labels.json`；`SKILLS` 用的是相对路径 `./agent/tools`，依赖 CWD，建议改成基于文件位置的绝对路径。- [ ]

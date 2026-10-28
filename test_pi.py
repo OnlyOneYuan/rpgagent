@@ -193,12 +193,38 @@ class PiRPC:
 
 if __name__ == "__main__":
     pi = PiRPC(cwd=r"D:\code\RPG")
-    pi.on_event(lambda e: print("[EVENT]", e.get("type"), str(e.get("delta", ""))[:80]))
 
-    print("new_session ->", pi.new_session("rpg-1"))
-    print("set_model   ->", pi.set_model())
-    resp = pi.prompt("读取当前目录结构，列出所有 .py 文件")
-    print("prompt      ->", resp)
+    chunks: list[str] = []
+
+    def collect(e: dict):
+        # 外层只有 message_update 携带正文
+        if e.get("type") != "message_update":
+            return
+        ev = e.get("assistantMessageEvent")
+        if not isinstance(ev, dict):
+            return
+        # 只收正文增量，过滤 thinking_delta / usage 噪音
+        if ev.get("type") == "text_delta":
+            d = ev.get("delta")
+            if isinstance(d, str) and d:
+                chunks.append(d)
+                print(d, end="", flush=True)  # 流式打字效果
+
+    pi.on_event(collect)
+
+    pi.new_session("weather-1")
+    pi.set_model()
+
+    resp = pi.prompt("用中文回答：请告诉我今天的天气情况。")
+
+    answered = False
     if resp.get("success"):
-        print("settled     ->", pi.wait_for("agent_settled", timeout=180))
+        answered = pi.wait_for("agent_settled", timeout=180) is not None
+
+    answer = "".join(chunks).strip()
+    print("\n\n===== 模型回答 =====")
+    print(answer if answer else "(未收到正文，可能超时)")
+    print(f"\n[结束状态] settled={answered}, 字符数={len(answer)}")
     pi.close()
+
+
