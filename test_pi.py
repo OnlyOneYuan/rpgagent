@@ -5,8 +5,9 @@ import threading
 import uuid
 from typing import Callable, Optional
 from dotenv import load_dotenv
+from agent.config.setting import Paths
 
-PI_CMD = r"C:\Users\e-yan.lu\.pi\agent\bin\pi.cmd"
+PI_CMD = Paths.PI
 HERE = os.path.dirname(os.path.abspath(__file__))
 # 用一个项目内的 agent 目录，避免污染全局 ~/.pi/agent
 AGENT_DIR = os.path.join(HERE, ".pi-agent")
