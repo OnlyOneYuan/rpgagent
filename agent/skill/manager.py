@@ -64,7 +64,7 @@ class SkillsManager:
         self.skills = self._discover(self.skills_directory, tag, mode)
 
     @staticmethod
-    def _discover(skills_dir: Path, tag = None,
+    def _discover(skills_dir: Path = Paths.SKILLS, tag = None,
                   match_mode: MatchMode | str = MatchMode.ANY) -> dict[str, Skill]:
         wanted = normalize_tags(tag)
         skills: dict[str, Skill] = {}

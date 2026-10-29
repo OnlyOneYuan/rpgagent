@@ -5,8 +5,9 @@ import threading
 import uuid
 from typing import Callable, Optional
 from dotenv import load_dotenv
+from agent.config.setting import Paths
 
-PI_CMD = r"C:\Users\e-yan.lu\.pi\agent\bin\pi.cmd"
+PI_CMD = Paths.PI
 HERE = os.path.dirname(os.path.abspath(__file__))
 # 用一个项目内的 agent 目录，避免污染全局 ~/.pi/agent
 AGENT_DIR = os.path.join(HERE, ".pi-agent")
@@ -141,7 +142,9 @@ class PiRPC:
                 self._callbacks.pop(req_id, None)
             raise TimeoutError(f"{msg.get('type')} (id={req_id}) 超时")
         return box
-
+    def get_state(self):        return self._send({"type": "get_state"})
+    def last_text(self):        return self._send({"type": "get_last_assistant_text"})
+    def abort(self):            return self._send({"type": "abort"})
     def wait_for(self, event_type: str, timeout: Optional[float] = None) -> Optional[dict]:
         """等待某个流式事件，如 agent_settled / agent_end。"""
         key = "_wait_" + uuid.uuid4().hex

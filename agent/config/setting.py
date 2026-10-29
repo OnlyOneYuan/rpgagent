@@ -7,6 +7,7 @@ load_dotenv()
 api_key = os.getenv("API_KEY")
 base_url = os.getenv("API_BASE", "127.0.0.1:7777")
 model_name = os.getenv("MODEL_NAME")
+user_profile = os.environ.get("USERPROFILE")
 
 # read has problem,will be deleted
 class Authorize(StrEnum):
@@ -22,5 +23,7 @@ class Paths(StrEnum):
     SKILLS = r"./agent/skills"
     # Qwen Code 技能目录（项目级，另外还会扫 ~/.qwen/skills）
     QWEN_SKILLS = r"./agent/skills"
+    PI = rf"{user_profile}\.pi\agent\bin\pi.cmd" #改到.env
 
-
+# if __name__ == "__main__":
+#     print(Paths.PI)
